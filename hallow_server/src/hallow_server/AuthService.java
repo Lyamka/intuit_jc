@@ -30,16 +30,14 @@ public class AuthService implements Runnable {
 	}
 	
 	public synchronized void authPlayerSession(PlayerSession ps) {
-		System.out.println("!!!! we added new PlayerSession!!!!");
 		authQueue.offer(ps);
 	}
 	
 	public void Login(PlayerSession ps) {
 		Integer playerId = findPlayerIdByName(ps.getPlayerName());
 		
-		log.info("Sleeping in auth thread");
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
