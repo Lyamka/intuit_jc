@@ -16,10 +16,10 @@ public class PlayerSession {
 		this.sessionId	 = sessionId;
 	}
 	
-	public void setPlayerName(String playerName) {
+	public synchronized void setPlayerName(String playerName) {
 		this.playerName = playerName;
 		this.playerId = 0;
-		this.currentState = PlayerSession.LOGGING_IN;
+		this.currentState = playerName.isEmpty() ? PlayerSession.UNINITIALISED : PlayerSession.LOGGING_IN;
 	}
 	
 	public int getCurrentState() {
@@ -42,11 +42,11 @@ public class PlayerSession {
 		return playerName;
 	}
 
-	public void setUserNotFound() {
+	public synchronized void setUserNotFound() {
 		this.currentState = PlayerSession.NO_SUCH_USER;
 	}
 
-	public void setUserFound(Integer playerId) {
+	public synchronized void setUserFound(Integer playerId) {
 		this.playerId = playerId;
 		this.currentState = PlayerSession.LOGGED_IN;
 	}

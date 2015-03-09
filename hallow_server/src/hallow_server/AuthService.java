@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.eclipse.jetty.util.ConcurrentArrayQueue;
+
 public class AuthService implements Runnable {
 
 	private Map<String, Integer> players;
 	private Logger log;
+	private ConcurrentArrayQueue<PlayerSession> authQueue;
 	
 	private void createPlayers() {
 		players = new HashMap<String, Integer>();
@@ -20,28 +23,27 @@ public class AuthService implements Runnable {
 		players.put("Slaffko", 4);
 	}
 	
-	private List<PlayerSession> authQueue;
-	
 	public AuthService(Logger log) {
-		authQueue = Collections.synchronizedList(new LinkedList<PlayerSession>());
+		authQueue = new ConcurrentArrayQueue<PlayerSession>();
 		createPlayers();
 		this.log = log;
 	}
 	
-	public void authPlayerSession(PlayerSession ps) {
-		authQueue.add(ps);
+	public synchronized void authPlayerSession(PlayerSession ps) {
+		System.out.println("!!!! we added new PlayerSession!!!!");
+		authQueue.offer(ps);
 	}
 	
 	public void Login(PlayerSession ps) {
 		Integer playerId = findPlayerIdByName(ps.getPlayerName());
 		
 		log.info("Sleeping in auth thread");
-		/*try {
-			Thread.sleep(1000);
+		try {
+			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		
 		if (playerId == null) {
 			ps.setUserNotFound();
@@ -57,21 +59,20 @@ public class AuthService implements Runnable {
 	
 	@Override
 	public void run() {
+		PlayerSession ps = null;
+		
 		while (true) {
 			if (authQueue.size() == 0) {
 				try {
 					Thread.sleep(1000);
+					continue;
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			} else {
-				for (PlayerSession ps : authQueue) {
-					if (ps.getCurrentState() == PlayerSession.LOGGING_IN) {
-						Login(ps);
-					}
-					authQueue.remove(ps);
-					System.out.println(authQueue.size());
-					System.out.println("authq is empty : " + authQueue.isEmpty());
+			}
+			while ((ps = authQueue.poll()) != null) {
+				if (ps.getCurrentState() == PlayerSession.LOGGING_IN) {
+					Login(ps);
 				}
 			}
 		}

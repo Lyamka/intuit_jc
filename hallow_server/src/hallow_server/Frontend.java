@@ -59,6 +59,7 @@ public class Frontend extends HttpServlet implements Runnable {
 		PlayerSession ps = sessions.get(sessionId);
 		if (ps == null) {
 			ps = new PlayerSession(sessionId);
+			sessions.put(sessionId, ps);
 		}
 		
 		handlePlayerSession(ps, response);
@@ -76,6 +77,7 @@ public class Frontend extends HttpServlet implements Runnable {
 		}
 		case PlayerSession.NO_SUCH_USER : {
 			response.getWriter().println(HWPageGenerator.getLoginPage(ps));
+			ps.setPlayerName("");
 			break;
 		}
 		case PlayerSession.UNINITIALISED : {
@@ -84,7 +86,6 @@ public class Frontend extends HttpServlet implements Runnable {
 		}
 		}
 	}
-
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse response)
@@ -104,6 +105,7 @@ public class Frontend extends HttpServlet implements Runnable {
 		PlayerSession ps = sessions.get(sessionId);
 		if (ps == null) {
 			ps = new PlayerSession(sessionId);
+			sessions.put(sessionId, ps);
 		}
 		
 		if (ps.getCurrentState() == PlayerSession.UNINITIALISED) {
