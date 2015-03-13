@@ -12,11 +12,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class Frontend extends HttpServlet implements Runnable {
+import messageSystem.Abonent;
+import messageSystem.MessageAddress;
+
+public class Frontend extends HttpServlet implements Runnable, Abonent {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 5294817680088593615L;
+	
+	private MessageAddress messageAddress = new MessageAddress();
 	private AtomicInteger handleCount;
 	private AtomicInteger idGenerator;
 	private Logger log;
@@ -26,6 +31,8 @@ public class Frontend extends HttpServlet implements Runnable {
 	
 	public Frontend(Logger log) {
 		super();
+		
+		HallowServer.messageManager.registerAbonent(this);
 		
 		handleCount = new AtomicInteger();
 		idGenerator = new AtomicInteger();
@@ -130,5 +137,10 @@ public class Frontend extends HttpServlet implements Runnable {
 				return;
 			}
 		}
+	}
+
+	@Override
+	public MessageAddress getAddress() {
+		return messageAddress;
 	}
 }

@@ -3,6 +3,8 @@ package hallow_server;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import messageSystem.MessageManager;
+
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -15,6 +17,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
  
 public class HallowServer {
 	private Logger log;
+	static MessageManager messageManager = new MessageManager();
 	
     public HallowServer() throws Exception {
     	log = Logger.getLogger(this.getClass().getName());
